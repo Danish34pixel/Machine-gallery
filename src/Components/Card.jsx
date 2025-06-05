@@ -12,8 +12,9 @@ const MachineGallery = () => {
       id: 1,
       name: "Commercial Treadmill Pro",
       category: "Cardio",
+      location: "Cardio Zone - Row A",
       description:
-        "Professional-grade treadmill with advanced shock absorption and interactive training programs.",
+        "Our state-of-the-art treadmill features advanced shock absorption for comfortable running and walking workouts.",
       specs: {
         "Max Speed": "20 km/h",
         "Incline Range": "0-15%",
@@ -28,14 +29,17 @@ const MachineGallery = () => {
         "Emergency stop system",
       ],
       muscleGroups: ["Legs", "Glutes", "Core", "Cardio"],
-      glbUrl: "/Treadmill_Genesis_9_0602091559_texture.glb ", // Placeholder for GLB model
+      glbUrl: "/Treadmill_Genesis_9_0602091559_texture.glb",
+      difficulty: "Beginner to Advanced",
+      availability: "Available",
     },
     {
       id: 2,
       name: "Multi-Station Cable Machine",
       category: "Strength",
+      location: "Strength Zone - Center",
       description:
-        "Versatile cable machine with dual weight stacks for total body strength training.",
+        "Versatile cable machine perfect for functional training and targeting multiple muscle groups simultaneously.",
       specs: {
         "Weight Stacks": "2 × 100 kg",
         "Cable Travel": "2.1 m",
@@ -51,13 +55,16 @@ const MachineGallery = () => {
       ],
       muscleGroups: ["Full Body", "Arms", "Back", "Chest"],
       glbUrl: "/Cable_Machine_Station_0602102043_texture.glb",
+      difficulty: "Intermediate to Advanced",
+      availability: "Available",
     },
     {
       id: 3,
       name: "Olympic Squat Rack",
       category: "Free Weights",
+      location: "Free Weight Area - Station 1",
       description:
-        "Heavy-duty squat rack with safety bars and pull-up station for serious strength training.",
+        "Heavy-duty squat rack designed for serious strength training with integrated safety features.",
       specs: {
         "Max Load": "500 kg",
         "Bar Height": "Adjustable 51-122 cm",
@@ -73,13 +80,16 @@ const MachineGallery = () => {
       ],
       muscleGroups: ["Legs", "Glutes", "Core", "Full Body"],
       glbUrl: "/Squat_Rack_Essentials_0602102754_texture.glb",
+      difficulty: "Intermediate to Advanced",
+      availability: "Available",
     },
     {
       id: 4,
       name: "Adjustable Bench Press",
       category: "Free Weights",
+      location: "Free Weight Area - Station 2",
       description:
-        "Professional adjustable bench with multiple incline positions for comprehensive chest training.",
+        "Professional adjustable bench perfect for chest development and upper body strength training.",
       specs: {
         Adjustments: "7 positions",
         "Max Weight": "300 kg",
@@ -95,13 +105,16 @@ const MachineGallery = () => {
       ],
       muscleGroups: ["Chest", "Shoulders", "Triceps", "Core"],
       glbUrl: "/Weight_Bench_Setup_0602103351_texture.glb",
+      difficulty: "Beginner to Advanced",
+      availability: "Available",
     },
     {
       id: 5,
       name: "Leg Press Machine",
       category: "Strength",
+      location: "Strength Zone - Corner",
       description:
-        "45-degree leg press machine with large footplate for safe and effective leg training.",
+        "45-degree leg press machine designed for safe and effective lower body strength development.",
       specs: {
         "Weight Capacity": "400 kg",
         Footplate: "61×41 cm",
@@ -117,13 +130,16 @@ const MachineGallery = () => {
       ],
       muscleGroups: ["Quadriceps", "Glutes", "Hamstrings", "Calves"],
       glbUrl: "/Leg_Press_Machine_0602104153_texture.glb",
+      difficulty: "Beginner to Advanced",
+      availability: "Available",
     },
     {
       id: 6,
       name: "Rowing Machine Elite",
       category: "Cardio",
+      location: "Cardio Zone - Row B",
       description:
-        "Air resistance rowing machine with performance monitor for full-body cardio workouts.",
+        "Premium rowing machine offering full-body cardio workout with performance tracking capabilities.",
       specs: {
         Resistance: "Air + Magnetic",
         Monitor: "Performance PM5",
@@ -139,11 +155,12 @@ const MachineGallery = () => {
       ],
       muscleGroups: ["Full Body", "Back", "Arms", "Legs"],
       glbUrl: "/Fitness_Machine_Appar_0602104620_texture.glb",
+      difficulty: "Beginner to Advanced",
+      availability: "Available",
     },
-    // Removed erroneous console.log(glbUrl, "glbUrl")
   ];
 
-  // 3D Model Component (GLB Loader Only)
+  // 3D Model Component
   const ModelViewer = ({ machine, isCard = false }) => {
     const mountRef = useRef(null);
     const rendererRef = useRef(null);
@@ -159,18 +176,22 @@ const MachineGallery = () => {
 
       // Scene setup
       const scene = new THREE.Scene();
-      scene.background = new THREE.Color(0xf0f0f0);
+      // Gym-like background color
+      scene.background = new THREE.Color(0xf8f9fa);
 
       const camera = new THREE.PerspectiveCamera(
-        75,
+        45,
         mountRef.current.clientWidth / mountRef.current.clientHeight,
         0.1,
         1000
       );
-      camera.position.set(3, 2, 3);
+      camera.position.set(4, 3, 4);
       camera.lookAt(0, 0, 0);
 
-      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+      });
       renderer.setSize(
         mountRef.current.clientWidth,
         mountRef.current.clientHeight
@@ -180,15 +201,29 @@ const MachineGallery = () => {
       mountRef.current.appendChild(renderer.domElement);
       rendererRef.current = renderer;
 
-      // Lighting
-      const ambientLight = new THREE.AmbientLight(0x404040, 0.6);
+      // Gym-style lighting
+      const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
       scene.add(ambientLight);
-      const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-      directionalLight.position.set(10, 10, 5);
-      directionalLight.castShadow = true;
-      scene.add(directionalLight);
 
-      // GLTF Loader (ESM import for Vite/React)
+      const mainLight = new THREE.DirectionalLight(0xffffff, 1.0);
+      mainLight.position.set(8, 10, 5);
+      mainLight.castShadow = true;
+      scene.add(mainLight);
+
+      const fillLight = new THREE.DirectionalLight(0xffffff, 0.3);
+      fillLight.position.set(-5, 3, -5);
+      scene.add(fillLight);
+
+      // Subtle floor for context
+      const floorGeometry = new THREE.PlaneGeometry(15, 15);
+      const floorMaterial = new THREE.ShadowMaterial({ opacity: 0.08 });
+      const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.y = -1.5;
+      floor.receiveShadow = true;
+      scene.add(floor);
+
+      // GLTF Loader
       import("three/examples/jsm/loaders/GLTFLoader")
         .then(({ GLTFLoader }) => {
           loader = new GLTFLoader();
@@ -197,19 +232,30 @@ const MachineGallery = () => {
             (gltf) => {
               if (!isMounted) return;
               const model = gltf.scene;
+
+              // Center and scale the model
+              const box = new THREE.Box3().setFromObject(model);
+              const center = box.getCenter(new THREE.Vector3());
+              const size = box.getSize(new THREE.Vector3());
+
+              model.position.sub(center);
+              const maxDim = Math.max(size.x, size.y, size.z);
+              const scale = 2.5 / maxDim;
+              model.scale.setScalar(scale);
+
               model.traverse((child) => {
                 if (child.isMesh) {
                   child.castShadow = true;
                   child.receiveShadow = true;
                 }
               });
+
               modelRef.current = model;
               scene.add(model);
               cleanupModel = model;
             },
             undefined,
             (error) => {
-              // eslint-disable-next-line no-console
               console.error("Error loading GLB model:", error);
             }
           );
@@ -222,7 +268,7 @@ const MachineGallery = () => {
       const animate = () => {
         animationRef.current = requestAnimationFrame(animate);
         if (modelRef.current) {
-          modelRef.current.rotation.y += 0.01;
+          modelRef.current.rotation.y += 0.008;
         }
         renderer.render(scene, camera);
       };
@@ -258,11 +304,13 @@ const MachineGallery = () => {
       };
     }, [machine]);
 
-    // If no GLB, show fallback
     if (!machine.glbUrl) {
       return (
-        <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100">
-          <span>No 3D model available</span>
+        <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100">
+          <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-2">
+            <span className="text-2xl">🏋️</span>
+          </div>
+          <span className="text-sm font-medium">Equipment Preview</span>
         </div>
       );
     }
@@ -276,29 +324,29 @@ const MachineGallery = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
+        staggerChildren: 0.15,
       },
     },
   };
 
   const cardVariants = {
-    hidden: { y: 50, opacity: 0 },
+    hidden: { y: 60, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
       transition: {
         type: "spring",
         damping: 25,
-        stiffness: 300,
+        stiffness: 200,
       },
     },
     hover: {
-      y: -10,
-      scale: 1.02,
+      y: -12,
+      scale: 1.03,
       transition: {
         type: "spring",
-        damping: 20,
-        stiffness: 300,
+        damping: 15,
+        stiffness: 200,
       },
     },
   };
@@ -329,70 +377,140 @@ const MachineGallery = () => {
     },
   };
 
-  const handleTutorialClick = (machine) => {
+  const handleWorkoutGuide = (machine) => {
     alert(
-      `Opening full workout tutorial for ${machine.name}!\n\nThis would typically navigate to a comprehensive guide with:\n• Proper form and technique\n• Step-by-step exercise instructions\n• Safety guidelines and precautions\n• Video demonstrations\n• Workout routines and progressions\n• Muscle activation diagrams\n• Equipment setup instructions`
+      `Opening workout guide for ${machine.name}!\n\nThis guide includes:\n• Proper setup and adjustment\n• Correct form and technique\n• Beginner to advanced exercises\n• Safety guidelines\n• Muscle targeting tips\n• Common mistakes to avoid\n• Workout progression plans`
     );
   };
 
+  const getCategoryIcon = (category) => {
+    switch (category) {
+      case "Cardio":
+        return "❤️";
+      case "Strength":
+        return "💪";
+      case "Free Weights":
+        return "🏋️";
+      default:
+        return "⚡";
+    }
+  };
+
+  const getDifficultyColor = (difficulty) => {
+    if (difficulty.includes("Beginner")) return "bg-green-100 text-green-800";
+    if (difficulty.includes("Intermediate"))
+      return "bg-yellow-100 text-yellow-800";
+    return "bg-red-100 text-red-800";
+  };
+
   return (
-    <div className="min-h-screen  bg-slate-900">
-      {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      {/* Gym Introduction Header */}
       <motion.div
         initial={{ opacity: 0, y: -50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="text-center py-12"
+        className="text-center py-20 bg-gradient-to-r from-slate-800 via-blue-800 to-indigo-800"
       >
-        <h1 className="text-5xl font-bold text-white mb-4">
-          💪 Gym Equipment Gallery
+        <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
+          🏋️ Our Gym Equipment
         </h1>
-        <p className="text-xl text-purple-200">
-          Explore our collection of professional fitness equipment
+        <p className="text-xl text-blue-200 max-w-3xl mx-auto px-4">
+          Discover the professional-grade equipment available at our fitness
+          facility. Each machine is carefully selected to help you achieve your
+          fitness goals safely and effectively.
         </p>
+        <div className="mt-8 flex flex-wrap justify-center gap-4 text-blue-200">
+          <span className="bg-white/10 px-4 py-2 rounded-full">
+            ✨ State-of-the-art equipment
+          </span>
+          <span className="bg-white/10 px-4 py-2 rounded-full">
+            🛡️ Safety certified
+          </span>
+          <span className="bg-white/10 px-4 py-2 rounded-full">
+            📱 Smart technology
+          </span>
+        </div>
       </motion.div>
 
-      {/* Machine Cards Grid */}
-      <div className="container mx-auto px-6 pb-12">
+      {/* Equipment Showcase Grid */}
+      <div className="container mx-auto px-6 py-16">
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
           {machines.map((machine) => (
             <motion.div
               key={machine.id}
               variants={cardVariants}
               whileHover="hover"
-              className="bg-white/10 backdrop-blur-lg rounded-2xl p-6 cursor-pointer border border-white/20 shadow-2xl"
+              className="bg-white rounded-2xl shadow-lg hover:shadow-2xl cursor-pointer border border-gray-100 overflow-hidden transition-all duration-300"
               onClick={() => setSelectedMachine(machine)}
             >
-              {/* 3D Model Viewer */}
-              <div className="h-48 mb-4 bg-gray-100 rounded-xl overflow-hidden">
+              {/* 3D Equipment Preview */}
+              <div className="h-56 bg-gradient-to-br from-gray-50 to-blue-50 relative overflow-hidden">
                 <ModelViewer machine={machine} isCard={true} />
-              </div>
 
-              {/* Card Content */}
-              <div className="text-white">
-                <div className="flex justify-between items-start mb-3">
-                  <h3 className="text-xl font-bold">{machine.name}</h3>
-                  <span className="bg-purple-500/50 px-3 py-1 rounded-full text-sm">
+                {/* Equipment Status */}
+                <div className="absolute top-3 left-3">
+                  <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold flex items-center">
+                    <span className="w-2 h-2 bg-white rounded-full mr-2"></span>
+                    {machine.availability}
+                  </span>
+                </div>
+
+                {/* Category Badge */}
+                <div className="absolute top-3 right-3">
+                  <span className="bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold flex items-center">
+                    <span className="mr-1">
+                      {getCategoryIcon(machine.category)}
+                    </span>
                     {machine.category}
                   </span>
                 </div>
-                <p className="text-purple-100 text-sm leading-relaxed">
+              </div>
+
+              {/* Equipment Information */}
+              <div className="p-6">
+                <div className="mb-3">
+                  <h3 className="text-xl font-bold text-gray-900 mb-1">
+                    {machine.name}
+                  </h3>
+                  <p className="text-sm text-blue-600 font-medium">
+                    📍 {machine.location}
+                  </p>
+                </div>
+
+                <p className="text-gray-600 text-sm leading-relaxed mb-4">
                   {machine.description}
                 </p>
-                <div className="mt-4 flex justify-between items-center">
-                  <span className="text-purple-200 text-sm">
-                    Click for details
-                  </span>
-                  <motion.div
-                    whileHover={{ scale: 1.1 }}
-                    className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center"
+
+                {/* Difficulty Level */}
+                <div className="mb-4">
+                  <span
+                    className={`${getDifficultyColor(
+                      machine.difficulty
+                    )} px-3 py-1 rounded-full text-xs font-semibold`}
                   >
-                    <span className="text-white text-lg">→</span>
+                    {machine.difficulty}
+                  </span>
+                </div>
+
+                {/* Quick Info */}
+                <div className="flex justify-between items-center pt-4 border-t border-gray-100">
+                  <div className="text-sm text-gray-500">
+                    <span className="font-medium text-gray-700">
+                      {machine.muscleGroups.length}
+                    </span>{" "}
+                    muscle groups
+                  </div>
+                  <motion.div
+                    whileHover={{ scale: 1.1, x: 5 }}
+                    className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center shadow-md"
+                  >
+                    <span className="text-white text-lg font-bold">→</span>
                   </motion.div>
                 </div>
               </div>
@@ -401,14 +519,14 @@ const MachineGallery = () => {
         </motion.div>
       </div>
 
-      {/* Detailed Modal */}
+      {/* Equipment Details Modal */}
       <AnimatePresence>
         {selectedMachine && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
             onClick={(e) => {
               if (e.target === e.currentTarget) {
                 setSelectedMachine(null);
@@ -420,99 +538,151 @@ const MachineGallery = () => {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
+              className="bg-white rounded-3xl max-w-5xl w-full max-h-[90vh] overflow-y-auto shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Modal Header */}
-              <div className="relative p-6 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-3xl">
+              <div className="relative p-8 bg-gradient-to-r from-slate-800 to-blue-800 text-white rounded-t-3xl">
                 <button
                   onClick={() => setSelectedMachine(null)}
-                  className="absolute top-4 right-4 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors"
+                  className="absolute top-6 right-6 w-12 h-12 bg-white/10 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors"
                 >
-                  ✕
+                  <span className="text-xl">✕</span>
                 </button>
-                <h2 className="text-3xl font-bold mb-2">
-                  {selectedMachine.name}
-                </h2>
-                <p className="text-purple-100">{selectedMachine.category}</p>
+
+                <div className="flex flex-col md:flex-row md:justify-between md:items-start">
+                  <div>
+                    <h2 className="text-4xl font-bold mb-3">
+                      {selectedMachine.name}
+                    </h2>
+                    <div className="flex items-center gap-4 text-blue-200">
+                      <span className="flex items-center">
+                        {getCategoryIcon(selectedMachine.category)}{" "}
+                        {selectedMachine.category}
+                      </span>
+                      <span>📍 {selectedMachine.location}</span>
+                    </div>
+                  </div>
+                  <div className="mt-4 md:mt-0">
+                    <span className="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold">
+                      {selectedMachine.availability}
+                    </span>
+                  </div>
+                </div>
               </div>
 
-              <div className="p-6">
-                {/* 3D Model Display */}
-                <div className="h-64 mb-6 bg-gray-50 rounded-2xl overflow-hidden">
+              <div className="p-8">
+                {/* 3D Equipment Display */}
+                <div className="h-80 mb-8 bg-gradient-to-br from-gray-50 to-blue-50 rounded-2xl overflow-hidden shadow-inner">
                   <ModelViewer machine={selectedMachine} />
                 </div>
 
-                {/* Description */}
-                <div className="mb-6">
-                  <h3 className="text-xl font-semibold mb-3 text-gray-800">
-                    Description
-                  </h3>
-                  <p className="text-gray-600 leading-relaxed">
-                    {selectedMachine.description}
-                  </p>
-                </div>
-
-                {/* Muscle Groups */}
-                <div className="mb-6">
-                  <h3 className="text-xl font-semibold mb-3 text-gray-800">
-                    Target Muscle Groups
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedMachine.muscleGroups.map((muscle, index) => (
-                      <span
-                        key={index}
-                        className="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium"
-                      >
-                        {muscle}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Specifications */}
-                <div className="mb-6">
-                  <h3 className="text-xl font-semibold mb-3 text-gray-800">
-                    Specifications
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {Object.entries(selectedMachine.specs).map(
-                      ([key, value]) => (
-                        <div key={key} className="bg-gray-50 p-4 rounded-lg">
-                          <span className="font-semibold text-gray-700">
-                            {key}:
-                          </span>
-                          <span className="ml-2 text-gray-600">{value}</span>
-                        </div>
-                      )
-                    )}
-                  </div>
-                </div>
-
-                {/* Features */}
-                <div className="mb-8">
-                  <h3 className="text-xl font-semibold mb-3 text-gray-800">
-                    Key Features
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {selectedMachine.features.map((feature, index) => (
-                      <div key={index} className="flex items-center">
-                        <span className="text-green-500 mr-2">✓</span>
-                        <span className="text-gray-600">{feature}</span>
+                {/* Equipment Information Grid */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {/* Left Column */}
+                  <div>
+                    {/* About This Equipment */}
+                    <div className="mb-8">
+                      <h3 className="text-2xl font-bold mb-4 text-gray-900">
+                        About This Equipment
+                      </h3>
+                      <p className="text-gray-700 leading-relaxed text-lg mb-4">
+                        {selectedMachine.description}
+                      </p>
+                      <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                        <span className="text-blue-800 font-semibold">
+                          Difficulty Level:{" "}
+                        </span>
+                        <span
+                          className={`${getDifficultyColor(
+                            selectedMachine.difficulty
+                          )} px-3 py-1 rounded-full text-sm font-semibold ml-2`}
+                        >
+                          {selectedMachine.difficulty}
+                        </span>
                       </div>
-                    ))}
+                    </div>
+
+                    {/* Target Muscles */}
+                    <div className="mb-8">
+                      <h3 className="text-2xl font-bold mb-4 text-gray-900">
+                        Muscle Groups Targeted
+                      </h3>
+                      <div className="grid grid-cols-2 gap-3">
+                        {selectedMachine.muscleGroups.map((muscle, index) => (
+                          <div
+                            key={index}
+                            className="bg-gradient-to-r from-red-50 to-red-100 text-red-800 px-4 py-3 rounded-xl text-center font-semibold border border-red-200"
+                          >
+                            {muscle}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column */}
+                  <div>
+                    {/* Equipment Specifications */}
+                    <div className="mb-8">
+                      <h3 className="text-2xl font-bold mb-4 text-gray-900">
+                        Equipment Specifications
+                      </h3>
+                      <div className="space-y-3">
+                        {Object.entries(selectedMachine.specs).map(
+                          ([key, value]) => (
+                            <div
+                              key={key}
+                              className="bg-gray-50 p-4 rounded-xl border border-gray-200 flex justify-between items-center"
+                            >
+                              <span className="font-semibold text-gray-800">
+                                {key}
+                              </span>
+                              <span className="text-gray-600 font-medium">
+                                {value}
+                              </span>
+                            </div>
+                          )
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Key Features */}
+                    <div className="mb-8">
+                      <h3 className="text-2xl font-bold mb-4 text-gray-900">
+                        Key Features
+                      </h3>
+                      <div className="space-y-3">
+                        {selectedMachine.features.map((feature, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center bg-green-50 p-3 rounded-xl border border-green-200"
+                          >
+                            <span className="text-green-500 mr-3 text-xl">
+                              ✓
+                            </span>
+                            <span className="text-gray-800 font-medium">
+                              {feature}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {/* Full Tutorial Button */}
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleTutorialClick(selectedMachine)}
-                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 px-6 rounded-2xl font-semibold text-lg shadow-lg hover:shadow-xl transition-shadow"
-                >
-                  🏋️ Open Full Workout Tutorial
-                </motion.button>
+                {/* Action Button */}
+                <div className="mt-8 pt-8 border-t border-gray-200">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleWorkoutGuide(selectedMachine)}
+                    className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 px-8 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center"
+                  >
+                    <span className="mr-3">📚</span>
+                    View Complete Workout Guide
+                  </motion.button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
